@@ -1,0 +1,69 @@
+abstract = UnknownField(null=True)  # VARCHAR
+added = IntegerField(null=True)
+advisor = UnknownField(null=True)  # VARCHAR
+applicationnumber = UnknownField(db_column='applicationNumber', null=True)  # VARCHAR
+articlecolumn = UnknownField(db_column='articleColumn', null=True)  # VARCHAR
+arxivid = UnknownField(db_column='arxivId', null=True)  # VARCHAR
+chapter = UnknownField(null=True)  # VARCHAR
+citationkey = UnknownField(db_column='citationKey', null=True)  # VARCHAR
+city = UnknownField(null=True)  # VARCHAR
+code = UnknownField(null=True)  # VARCHAR
+codenumber = UnknownField(db_column='codeNumber', null=True)  # VARCHAR
+codesection = UnknownField(db_column='codeSection', null=True)  # VARCHAR
+codevolume = UnknownField(db_column='codeVolume', null=True)  # VARCHAR
+committee = UnknownField(null=True)  # VARCHAR
+confirmed = IntegerField(null=True)
+counsel = UnknownField(null=True)  # VARCHAR
+country = UnknownField(null=True)  # VARCHAR
+dateaccessed = UnknownField(db_column='dateAccessed', null=True)  # VARCHAR
+day = IntegerField(null=True)
+deduplicated = IntegerField(null=True)
+deletionpending = IntegerField(db_column='deletionPending', null=True)
+department = UnknownField(null=True)  # VARCHAR
+doi = UnknownField(null=True)  # VARCHAR
+edition = UnknownField(null=True)  # VARCHAR
+favourite = IntegerField(null=True)
+genre = UnknownField(null=True)  # VARCHAR
+hidefrommendeleywebindex = IntegerField(db_column='hideFromMendeleyWebIndex', null=True)
+importer = UnknownField(null=True)  # VARCHAR
+institution = UnknownField(null=True)  # VARCHAR
+internationalauthor = UnknownField(db_column='internationalAuthor', null=True)  # VARCHAR
+internationalnumber = UnknownField(db_column='internationalNumber', null=True)  # VARCHAR
+internationaltitle = UnknownField(db_column='internationalTitle', null=True)  # VARCHAR
+internationalusertype = UnknownField(db_column='internationalUserType', null=True)  # VARCHAR
+isbn = UnknownField(null=True)  # VARCHAR
+issn = UnknownField(null=True)  # VARCHAR
+issue = UnknownField(null=True)  # VARCHAR
+language = UnknownField(null=True)  # VARCHAR
+lastupdate = UnknownField(db_column='lastUpdate', null=True)  # VARCHAR
+legalstatus = UnknownField(db_column='legalStatus', null=True)  # VARCHAR
+length = UnknownField(null=True)  # VARCHAR
+medium = UnknownField(null=True)  # VARCHAR
+modified = IntegerField(null=True)
+month = IntegerField(null=True)
+note = UnknownField(null=True)  # VARCHAR
+originalpublication = UnknownField(db_column='originalPublication', null=True)  # VARCHAR
+owner = UnknownField(null=True)  # VARCHAR
+pages = UnknownField(null=True)  # VARCHAR
+pmid = BigIntegerField(null=True)
+privacy = UnknownField(null=True)  # VARCHAR
+publiclawnumber = UnknownField(db_column='publicLawNumber', null=True)  # VARCHAR
+publication = UnknownField(null=True)  # VARCHAR
+publisher = UnknownField(null=True)  # VARCHAR
+read = IntegerField(null=True)
+reprintedition = UnknownField(db_column='reprintEdition', null=True)  # VARCHAR
+reviewedarticle = UnknownField(db_column='reviewedArticle', null=True)  # VARCHAR
+revisionnumber = UnknownField(db_column='revisionNumber', null=True)  # VARCHAR
+sections = UnknownField(null=True)  # VARCHAR
+series = UnknownField(null=True)  # VARCHAR
+serieseditor = UnknownField(db_column='seriesEditor', null=True)  # VARCHAR
+seriesnumber = UnknownField(db_column='seriesNumber', null=True)  # VARCHAR
+session = UnknownField(null=True)  # VARCHAR
+shorttitle = UnknownField(db_column='shortTitle', null=True)  # VARCHAR
+sourcetype = UnknownField(db_column='sourceType', null=True)  # VARCHAR
+title = CharField(null=True)  # VARCHAR
+type = UnknownField(null=True)  # VARCHAR
+usertype = UnknownField(db_column='userType', null=True)  # VARCHAR
+uuid = UnknownField(unique=True)  # VARCHAR
+volume = UnknownField(null=True)  # VARCHAR
+year = IntegerField(null=True)
