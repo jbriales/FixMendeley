@@ -11,8 +11,8 @@ import json
 import os
 import subprocess
 
-from my_mendeley_models import *
-# from mendeley_models import *
+# from my_mendeley_models import *
+from mendeley_models import *
 
 db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 
@@ -39,7 +39,7 @@ def main():
     #     }]
 
     # Populate bibtex database from Mendeley database via peewee
-    for doc in Document.select():
+    for doc in Documents.select():
         # print(doc.title)
         entry = {
             'ENTRYTYPE': mend_to_bib_types[doc.type],
