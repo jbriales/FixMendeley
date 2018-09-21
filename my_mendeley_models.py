@@ -46,22 +46,26 @@ class Author(BaseModel):
 
 
 class Url(BaseModel):
+    # documentid = IntegerField(column_name='documentId')
     documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='urls')
     position = IntegerField()
     url = CharField()
 
     class Meta:
-        db_table = 'DocumentUrls'
+        table_name = 'DocumentUrls'
+        indexes = (
+            (('documentid', 'position'), True),
+        )
+        primary_key = CompositeKey('documentid', 'position')
 
 
-# class Documenturls(BaseModel):
-#     documentid = IntegerField(column_name='documentId')
-#     position = IntegerField()
-#     url = CharField()
-#
-#     class Meta:
-#         table_name = 'DocumentUrls'
-#         indexes = (
-#             (('documentid', 'position'), True),
-#         )
-#         primary_key = CompositeKey('documentid', 'position')
+class Tag(BaseModel):
+    documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='urls')
+    tag = CharField()
+
+    class Meta:
+        table_name = 'DocumentTags'
+        indexes = (
+            (('documentid', 'tag'), True),
+        )
+        primary_key = CompositeKey('documentid', 'tag')
