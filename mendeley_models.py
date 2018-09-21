@@ -10,360 +10,360 @@ class BaseModel(Model):
         database = database
 
 class Canonicaldocuments(BaseModel):
-    catalogurl = UnknownField(db_column='catalogUrl', null=True)  # VARCHAR
-    downloadurl = UnknownField(db_column='downloadUrl', null=True)  # VARCHAR
-    lastmodified = IntegerField(db_column='lastModified')
-    uuid = UnknownField(unique=True)  # VARCHAR
+    catalogurl = CharField(column_name='catalogUrl', null=True)
+    downloadurl = CharField(column_name='downloadUrl', null=True)
+    lastmodified = IntegerField(column_name='lastModified')
+    uuid = CharField(unique=True)
 
     class Meta:
-        db_table = 'CanonicalDocuments'
+        table_name = 'CanonicalDocuments'
 
 class Datacleaner(BaseModel):
     version = IntegerField()
 
     class Meta:
-        db_table = 'DataCleaner'
+        table_name = 'DataCleaner'
         primary_key = False
 
 class Documentcanonicalids(BaseModel):
-    canonicalid = IntegerField(db_column='canonicalId', index=True)
-    documentid = PrimaryKeyField(db_column='documentId', null=True)
+    canonicalid = IntegerField(column_name='canonicalId', index=True)
+    documentid = AutoField(column_name='documentId', null=True)
     timestamp = IntegerField()
 
     class Meta:
-        db_table = 'DocumentCanonicalIds'
+        table_name = 'DocumentCanonicalIds'
 
 class Documentcontributors(BaseModel):
-    contribution = UnknownField()  # VARCHAR
-    documentid = IntegerField(db_column='documentId', index=True)
-    firstnames = UnknownField(db_column='firstNames', null=True)  # VARCHAR
-    lastname = UnknownField(db_column='lastName')  # VARCHAR
+    contribution = CharField()
+    documentid = IntegerField(column_name='documentId', index=True)
+    firstnames = CharField(column_name='firstNames', null=True)
+    lastname = CharField(column_name='lastName')
 
     class Meta:
-        db_table = 'DocumentContributors'
+        table_name = 'DocumentContributors'
 
 class Documentdetailsbase(BaseModel):
-    conflictvalue = UnknownField(db_column='conflictValue', null=True)  # VARCHAR
-    documentid = IntegerField(db_column='documentId', index=True)
-    fieldid = IntegerField(db_column='fieldId')
-    originalvalue = UnknownField(db_column='originalValue', null=True)  # VARCHAR
+    conflictvalue = CharField(column_name='conflictValue', null=True)
+    documentid = IntegerField(column_name='documentId', index=True)
+    fieldid = IntegerField(column_name='fieldId')
+    originalvalue = CharField(column_name='originalValue', null=True)
 
     class Meta:
-        db_table = 'DocumentDetailsBase'
+        table_name = 'DocumentDetailsBase'
         indexes = (
             (('documentid', 'fieldid'), True),
         )
         primary_key = CompositeKey('documentid', 'fieldid')
 
 class Documentfields(BaseModel):
-    fieldid = PrimaryKeyField(db_column='fieldId', null=True)
-    name = UnknownField()  # VARCHAR
+    fieldid = AutoField(column_name='fieldId', null=True)
+    name = CharField()
 
     class Meta:
-        db_table = 'DocumentFields'
+        table_name = 'DocumentFields'
 
 class Documentfiles(BaseModel):
-    documentid = IntegerField(db_column='documentId', index=True)
-    downloadrestricted = BooleanField(db_column='downloadRestricted')
-    hash = UnknownField(index=True)  # CHAR[40]
-    remotefileuuid = UnknownField(db_column='remoteFileUuid')  # CHAR[38]
+    documentid = IntegerField(column_name='documentId', index=True)
+    downloadrestricted = BooleanField(column_name='downloadRestricted', constraints=[SQL("DEFAULT 0")])
+    hash = CharField(index=True)
+    remotefileuuid = CharField(column_name='remoteFileUuid', constraints=[SQL("DEFAULT ''")])
     unlinked = BooleanField()
 
     class Meta:
-        db_table = 'DocumentFiles'
+        table_name = 'DocumentFiles'
         primary_key = False
 
 class Documentfolders(BaseModel):
-    documentid = IntegerField(db_column='documentId')
-    folderid = IntegerField(db_column='folderId')
-    status = UnknownField()  # VARCHAR
+    documentid = IntegerField(column_name='documentId')
+    folderid = IntegerField(column_name='folderId')
+    status = CharField()
 
     class Meta:
-        db_table = 'DocumentFolders'
+        table_name = 'DocumentFolders'
         indexes = (
             (('documentid', 'folderid'), True),
         )
         primary_key = CompositeKey('documentid', 'folderid')
 
 class Documentfoldersbase(BaseModel):
-    documentid = IntegerField(db_column='documentId', index=True)
-    folderid = IntegerField(db_column='folderId')
+    documentid = IntegerField(column_name='documentId', index=True)
+    folderid = IntegerField(column_name='folderId')
 
     class Meta:
-        db_table = 'DocumentFoldersBase'
+        table_name = 'DocumentFoldersBase'
         indexes = (
             (('documentid', 'folderid'), True),
         )
         primary_key = CompositeKey('documentid', 'folderid')
 
 class Documentkeywords(BaseModel):
-    documentid = IntegerField(db_column='documentId')
-    keyword = UnknownField()  # VARCHAR
+    documentid = IntegerField(column_name='documentId')
+    keyword = CharField()
 
     class Meta:
-        db_table = 'DocumentKeywords'
+        table_name = 'DocumentKeywords'
         indexes = (
             (('documentid', 'keyword'), True),
         )
         primary_key = CompositeKey('documentid', 'keyword')
 
 class Documents(BaseModel):
-    abstract = UnknownField(null=True)  # VARCHAR
+    abstract = CharField(null=True)
     added = IntegerField(null=True)
-    advisor = UnknownField(null=True)  # VARCHAR
-    applicationnumber = UnknownField(db_column='applicationNumber', null=True)  # VARCHAR
-    articlecolumn = UnknownField(db_column='articleColumn', null=True)  # VARCHAR
-    arxivid = UnknownField(db_column='arxivId', null=True)  # VARCHAR
-    chapter = UnknownField(null=True)  # VARCHAR
-    citationkey = UnknownField(db_column='citationKey', null=True)  # VARCHAR
-    city = UnknownField(null=True)  # VARCHAR
-    code = UnknownField(null=True)  # VARCHAR
-    codenumber = UnknownField(db_column='codeNumber', null=True)  # VARCHAR
-    codesection = UnknownField(db_column='codeSection', null=True)  # VARCHAR
-    codevolume = UnknownField(db_column='codeVolume', null=True)  # VARCHAR
-    committee = UnknownField(null=True)  # VARCHAR
+    advisor = CharField(null=True)
+    applicationnumber = CharField(column_name='applicationNumber', null=True)
+    articlecolumn = CharField(column_name='articleColumn', null=True)
+    arxivid = CharField(column_name='arxivId', null=True)
+    chapter = CharField(null=True)
+    citationkey = CharField(column_name='citationKey', null=True)
+    city = CharField(null=True)
+    code = CharField(null=True)
+    codenumber = CharField(column_name='codeNumber', null=True)
+    codesection = CharField(column_name='codeSection', null=True)
+    codevolume = CharField(column_name='codeVolume', null=True)
+    committee = CharField(null=True)
     confirmed = IntegerField(null=True)
-    counsel = UnknownField(null=True)  # VARCHAR
-    country = UnknownField(null=True)  # VARCHAR
-    dateaccessed = UnknownField(db_column='dateAccessed', null=True)  # VARCHAR
+    counsel = CharField(null=True)
+    country = CharField(null=True)
+    dateaccessed = CharField(column_name='dateAccessed', null=True)
     day = IntegerField(null=True)
     deduplicated = IntegerField(null=True)
-    deletionpending = IntegerField(db_column='deletionPending', null=True)
-    department = UnknownField(null=True)  # VARCHAR
-    doi = UnknownField(null=True)  # VARCHAR
-    edition = UnknownField(null=True)  # VARCHAR
+    deletionpending = IntegerField(column_name='deletionPending', null=True)
+    department = CharField(null=True)
+    doi = CharField(null=True)
+    edition = CharField(null=True)
     favourite = IntegerField(null=True)
-    genre = UnknownField(null=True)  # VARCHAR
-    hidefrommendeleywebindex = IntegerField(db_column='hideFromMendeleyWebIndex', null=True)
-    importer = UnknownField(null=True)  # VARCHAR
-    institution = UnknownField(null=True)  # VARCHAR
-    internationalauthor = UnknownField(db_column='internationalAuthor', null=True)  # VARCHAR
-    internationalnumber = UnknownField(db_column='internationalNumber', null=True)  # VARCHAR
-    internationaltitle = UnknownField(db_column='internationalTitle', null=True)  # VARCHAR
-    internationalusertype = UnknownField(db_column='internationalUserType', null=True)  # VARCHAR
-    isbn = UnknownField(null=True)  # VARCHAR
-    issn = UnknownField(null=True)  # VARCHAR
-    issue = UnknownField(null=True)  # VARCHAR
-    language = UnknownField(null=True)  # VARCHAR
-    lastupdate = UnknownField(db_column='lastUpdate', null=True)  # VARCHAR
-    legalstatus = UnknownField(db_column='legalStatus', null=True)  # VARCHAR
-    length = UnknownField(null=True)  # VARCHAR
-    medium = UnknownField(null=True)  # VARCHAR
+    genre = CharField(null=True)
+    hidefrommendeleywebindex = IntegerField(column_name='hideFromMendeleyWebIndex', null=True)
+    importer = CharField(null=True)
+    institution = CharField(null=True)
+    internationalauthor = CharField(column_name='internationalAuthor', null=True)
+    internationalnumber = CharField(column_name='internationalNumber', null=True)
+    internationaltitle = CharField(column_name='internationalTitle', null=True)
+    internationalusertype = CharField(column_name='internationalUserType', null=True)
+    isbn = CharField(null=True)
+    issn = CharField(null=True)
+    issue = CharField(null=True)
+    language = CharField(null=True)
+    lastupdate = CharField(column_name='lastUpdate', null=True)
+    legalstatus = CharField(column_name='legalStatus', null=True)
+    length = CharField(null=True)
+    medium = CharField(null=True)
     modified = IntegerField(null=True)
     month = IntegerField(null=True)
-    note = UnknownField(null=True)  # VARCHAR
-    originalpublication = UnknownField(db_column='originalPublication', null=True)  # VARCHAR
-    owner = UnknownField(null=True)  # VARCHAR
-    pages = UnknownField(null=True)  # VARCHAR
+    note = CharField(null=True)
+    originalpublication = CharField(column_name='originalPublication', null=True)
+    owner = CharField(null=True)
+    pages = CharField(null=True)
     pmid = BigIntegerField(null=True)
-    privacy = UnknownField(null=True)  # VARCHAR
-    publiclawnumber = UnknownField(db_column='publicLawNumber', null=True)  # VARCHAR
-    publication = UnknownField(null=True)  # VARCHAR
-    publisher = UnknownField(null=True)  # VARCHAR
+    privacy = CharField(null=True)
+    publiclawnumber = CharField(column_name='publicLawNumber', null=True)
+    publication = CharField(null=True)
+    publisher = CharField(null=True)
     read = IntegerField(null=True)
-    reprintedition = UnknownField(db_column='reprintEdition', null=True)  # VARCHAR
-    reviewedarticle = UnknownField(db_column='reviewedArticle', null=True)  # VARCHAR
-    revisionnumber = UnknownField(db_column='revisionNumber', null=True)  # VARCHAR
-    sections = UnknownField(null=True)  # VARCHAR
-    series = UnknownField(null=True)  # VARCHAR
-    serieseditor = UnknownField(db_column='seriesEditor', null=True)  # VARCHAR
-    seriesnumber = UnknownField(db_column='seriesNumber', null=True)  # VARCHAR
-    session = UnknownField(null=True)  # VARCHAR
-    shorttitle = UnknownField(db_column='shortTitle', null=True)  # VARCHAR
-    sourcetype = UnknownField(db_column='sourceType', null=True)  # VARCHAR
-    title = UnknownField(null=True)  # VARCHAR
-    type = UnknownField(null=True)  # VARCHAR
-    usertype = UnknownField(db_column='userType', null=True)  # VARCHAR
-    uuid = UnknownField(unique=True)  # VARCHAR
-    volume = UnknownField(null=True)  # VARCHAR
+    reprintedition = CharField(column_name='reprintEdition', null=True)
+    reviewedarticle = CharField(column_name='reviewedArticle', null=True)
+    revisionnumber = CharField(column_name='revisionNumber', null=True)
+    sections = CharField(null=True)
+    series = CharField(null=True)
+    serieseditor = CharField(column_name='seriesEditor', null=True)
+    seriesnumber = CharField(column_name='seriesNumber', null=True)
+    session = CharField(null=True)
+    shorttitle = CharField(column_name='shortTitle', null=True)
+    sourcetype = CharField(column_name='sourceType', null=True)
+    title = CharField(null=True)
+    type = CharField(null=True)
+    usertype = CharField(column_name='userType', null=True)
+    uuid = CharField(unique=True)
+    volume = CharField(null=True)
     year = IntegerField(null=True)
 
     class Meta:
-        db_table = 'Documents'
+        table_name = 'Documents'
 
 class Documentnotes(BaseModel):
-    basenote = UnknownField(db_column='baseNote', null=True)  # VARCHAR
-    documentid = ForeignKeyField(db_column='documentId', rel_model=Documents, to_field='id', unique=True)
-    text = UnknownField()  # VARCHAR
+    basenote = CharField(column_name='baseNote', null=True)
+    documentid = ForeignKeyField(column_name='documentId', field='id', model=Documents, unique=True)
+    text = CharField()
     unlinked = BooleanField()
-    uuid = UnknownField(unique=True)  # CHAR[38]
+    uuid = CharField(unique=True)
 
     class Meta:
-        db_table = 'DocumentNotes'
+        table_name = 'DocumentNotes'
 
 class Documentreferences(BaseModel):
-    documentid = IntegerField(db_column='documentId', index=True)
-    referenceddocumentid = IntegerField(db_column='referencedDocumentId', index=True)
+    documentid = IntegerField(column_name='documentId', index=True)
+    referenceddocumentid = IntegerField(column_name='referencedDocumentId', index=True)
 
     class Meta:
-        db_table = 'DocumentReferences'
+        table_name = 'DocumentReferences'
         indexes = (
             (('documentid', 'referenceddocumentid'), True),
         )
         primary_key = CompositeKey('documentid', 'referenceddocumentid')
 
 class Documenttags(BaseModel):
-    documentid = IntegerField(db_column='documentId')
-    tag = UnknownField()  # VARCHAR
+    documentid = IntegerField(column_name='documentId')
+    tag = CharField()
 
     class Meta:
-        db_table = 'DocumentTags'
+        table_name = 'DocumentTags'
         indexes = (
             (('documentid', 'tag'), True),
         )
         primary_key = CompositeKey('documentid', 'tag')
 
 class Documenturls(BaseModel):
-    documentid = IntegerField(db_column='documentId')
+    documentid = IntegerField(column_name='documentId')
     position = IntegerField()
-    url = UnknownField()  # VARCHAR
+    url = CharField()
 
     class Meta:
-        db_table = 'DocumentUrls'
+        table_name = 'DocumentUrls'
         indexes = (
             (('documentid', 'position'), True),
         )
         primary_key = CompositeKey('documentid', 'position')
 
 class Documentversion(BaseModel):
-    documentid = PrimaryKeyField(db_column='documentId', null=True)
-    version = UnknownField(null=True)  # VARCHAR
+    documentid = AutoField(column_name='documentId', null=True)
+    version = CharField(null=True)
 
     class Meta:
-        db_table = 'DocumentVersion'
+        table_name = 'DocumentVersion'
 
 class Documentzotero(BaseModel):
-    documentid = PrimaryKeyField(db_column='documentId', null=True)
-    lastsynctime = IntegerField(db_column='lastSyncTime')
-    zoteroid = IntegerField(db_column='zoteroID')
+    documentid = AutoField(column_name='documentId', null=True)
+    lastsynctime = IntegerField(column_name='lastSyncTime')
+    zoteroid = IntegerField(column_name='zoteroID')
 
     class Meta:
-        db_table = 'DocumentZotero'
+        table_name = 'DocumentZotero'
 
 class Eventlog(BaseModel):
     sent = BooleanField()
     timestamp = IntegerField()
-    type = UnknownField()  # VARCHAR
+    type = CharField()
 
     class Meta:
-        db_table = 'EventLog'
+        table_name = 'EventLog'
 
 class Eventattributes(BaseModel):
-    attribute = UnknownField()  # VARCHAR
-    eventid = ForeignKeyField(db_column='eventId', null=True, rel_model=Eventlog, to_field='id')
-    value = UnknownField()  # VARCHAR
+    attribute = CharField()
+    eventid = ForeignKeyField(column_name='eventId', field='id', model=Eventlog, null=True)
+    value = CharField()
 
     class Meta:
-        db_table = 'EventAttributes'
+        table_name = 'EventAttributes'
         indexes = (
             (('eventid', 'attribute'), True),
         )
         primary_key = CompositeKey('attribute', 'eventid')
 
 class Filehighlights(BaseModel):
-    author = UnknownField(null=True)  # VARCHAR
-    color = UnknownField(null=True)  # VARCHAR
-    createdtime = UnknownField(db_column='createdTime')  # VARCHAR
-    documentid = ForeignKeyField(db_column='documentId', rel_model=Documents, to_field='id')
-    filehash = UnknownField(db_column='fileHash', index=True)  # CHAR[40]
-    profileuuid = UnknownField(db_column='profileUuid', null=True)  # VARCHAR
+    author = CharField(null=True)
+    color = CharField(null=True)
+    createdtime = CharField(column_name='createdTime')
+    documentid = ForeignKeyField(column_name='documentId', field='id', model=Documents)
+    filehash = CharField(column_name='fileHash', index=True)
+    profileuuid = CharField(column_name='profileUuid', null=True)
     unlinked = BooleanField()
-    uuid = UnknownField(unique=True)  # CHAR[38]
+    uuid = CharField(unique=True)
 
     class Meta:
-        db_table = 'FileHighlights'
+        table_name = 'FileHighlights'
 
 class Filehighlightrects(BaseModel):
-    highlightid = ForeignKeyField(db_column='highlightId', rel_model=Filehighlights, to_field='id')
+    highlightid = ForeignKeyField(column_name='highlightId', field='id', model=Filehighlights)
     page = IntegerField()
-    x1 = UnknownField()  # FLOAT
-    x2 = UnknownField()  # FLOAT
-    y1 = UnknownField()  # FLOAT
-    y2 = UnknownField()  # FLOAT
+    x1 = FloatField()
+    x2 = FloatField()
+    y1 = FloatField()
+    y2 = FloatField()
 
     class Meta:
-        db_table = 'FileHighlightRects'
+        table_name = 'FileHighlightRects'
 
 class Filenotes(BaseModel):
-    author = UnknownField(null=True)  # VARCHAR
-    basenote = UnknownField(db_column='baseNote', null=True)  # VARCHAR
-    color = UnknownField(null=True)  # VARCHAR
-    createdtime = UnknownField(db_column='createdTime')  # VARCHAR
-    documentid = ForeignKeyField(db_column='documentId', rel_model=Documents, to_field='id')
-    filehash = UnknownField(db_column='fileHash', index=True)  # CHAR[40]
-    modifiedtime = UnknownField(db_column='modifiedTime')  # VARCHAR
-    note = UnknownField()  # VARCHAR
+    author = CharField(null=True)
+    basenote = CharField(column_name='baseNote', null=True)
+    color = CharField(null=True)
+    createdtime = CharField(column_name='createdTime')
+    documentid = ForeignKeyField(column_name='documentId', field='id', model=Documents)
+    filehash = CharField(column_name='fileHash', index=True)
+    modifiedtime = CharField(column_name='modifiedTime')
+    note = CharField()
     page = IntegerField()
-    profileuuid = UnknownField(db_column='profileUuid', null=True)  # VARCHAR
+    profileuuid = CharField(column_name='profileUuid', null=True)
     unlinked = BooleanField()
-    uuid = UnknownField(unique=True)  # CHAR[38]
-    x = UnknownField()  # FLOAT
-    y = UnknownField()  # FLOAT
+    uuid = CharField(unique=True)
+    x = FloatField()
+    y = FloatField()
 
     class Meta:
-        db_table = 'FileNotes'
+        table_name = 'FileNotes'
 
 class Fileviewstates(BaseModel):
-    hash = UnknownField(null=True, primary_key=True)  # CHAR[40]
+    hash = CharField(null=True, primary_key=True)
     pagenumber = IntegerField()
-    positionx = UnknownField()  # FLOAT
-    positiony = UnknownField()  # FLOAT
-    rotation = UnknownField()  # FLOAT
-    zoomfactor = UnknownField()  # FLOAT
+    positionx = FloatField()
+    positiony = FloatField()
+    rotation = FloatField()
+    zoomfactor = FloatField()
     zoommode = IntegerField()
 
     class Meta:
-        db_table = 'FileViewStates'
+        table_name = 'FileViewStates'
 
 class Files(BaseModel):
-    hash = UnknownField(null=True, primary_key=True)  # CHAR[40]
-    localurl = UnknownField(db_column='localUrl')  # VARCHAR
+    hash = CharField(null=True, primary_key=True)
+    localurl = CharField(column_name='localUrl')
 
     class Meta:
-        db_table = 'Files'
+        table_name = 'Files'
 
 class Folders(BaseModel):
-    access = UnknownField()  # VARCHAR
-    creatorname = UnknownField(db_column='creatorName', null=True)  # VARCHAR
-    creatorprofileurl = UnknownField(db_column='creatorProfileUrl', null=True)  # VARCHAR
-    description = UnknownField(null=True)  # VARCHAR
-    downloadfilespolicy = IntegerField(db_column='downloadFilesPolicy')
-    name = UnknownField()  # VARCHAR
-    parentid = IntegerField(db_column='parentId', null=True)
-    publicurl = UnknownField(db_column='publicUrl', null=True)  # VARCHAR
-    syncpolicy = UnknownField(db_column='syncPolicy')  # VARCHAR
-    uploadfilespolicy = IntegerField(db_column='uploadFilesPolicy')
-    uuid = UnknownField(null=True, unique=True)  # VARCHAR
+    access = CharField()
+    creatorname = CharField(column_name='creatorName', null=True)
+    creatorprofileurl = CharField(column_name='creatorProfileUrl', null=True)
+    description = CharField(null=True)
+    downloadfilespolicy = IntegerField(column_name='downloadFilesPolicy')
+    name = CharField()
+    parentid = IntegerField(column_name='parentId', null=True)
+    publicurl = CharField(column_name='publicUrl', null=True)
+    syncpolicy = CharField(column_name='syncPolicy')
+    uploadfilespolicy = IntegerField(column_name='uploadFilesPolicy')
+    uuid = CharField(null=True, unique=True)
 
     class Meta:
-        db_table = 'Folders'
+        table_name = 'Folders'
 
 class Groups(BaseModel):
-    access = UnknownField()  # VARCHAR
-    downloadfilespolicy = IntegerField(db_column='downloadFilesPolicy')
-    grouptype = UnknownField(db_column='groupType')  # VARCHAR
-    iconname = UnknownField(db_column='iconName', null=True)  # VARCHAR
-    isowner = BooleanField(db_column='isOwner')
-    isprivate = BooleanField(db_column='isPrivate')
-    isreadonly = BooleanField(db_column='isReadOnly')
-    name = UnknownField(null=True)  # VARCHAR
-    publicurl = UnknownField(db_column='publicUrl', null=True)  # VARCHAR
-    remoteid = IntegerField(db_column='remoteId', null=True)
-    remoteuuid = UnknownField(db_column='remoteUuid', null=True, unique=True)  # VARCHAR
-    status = UnknownField()  # VARCHAR
-    syncpolicy = UnknownField(db_column='syncPolicy')  # VARCHAR
-    uploadfilespolicy = IntegerField(db_column='uploadFilesPolicy')
+    access = CharField()
+    downloadfilespolicy = IntegerField(column_name='downloadFilesPolicy')
+    grouptype = CharField(column_name='groupType')
+    iconname = CharField(column_name='iconName', null=True)
+    isowner = BooleanField(column_name='isOwner')
+    isprivate = BooleanField(column_name='isPrivate')
+    isreadonly = BooleanField(column_name='isReadOnly')
+    name = CharField(null=True)
+    publicurl = CharField(column_name='publicUrl', null=True)
+    remoteid = IntegerField(column_name='remoteId', null=True)
+    remoteuuid = CharField(column_name='remoteUuid', null=True, unique=True)
+    status = CharField()
+    syncpolicy = CharField(column_name='syncPolicy')
+    uploadfilespolicy = IntegerField(column_name='uploadFilesPolicy')
 
     class Meta:
-        db_table = 'Groups'
+        table_name = 'Groups'
 
 class Htmllocalstorage(BaseModel):
-    key = UnknownField()  # VARCHAR
-    origin = UnknownField()  # VARCHAR
-    value = UnknownField(null=True)  # VARCHAR
+    key = CharField()
+    origin = CharField()
+    value = CharField(null=True)
 
     class Meta:
-        db_table = 'HtmlLocalStorage'
+        table_name = 'HtmlLocalStorage'
         indexes = (
             (('origin', 'key'), True),
         )
@@ -371,74 +371,74 @@ class Htmllocalstorage(BaseModel):
 
 class Importhistory(BaseModel):
     ignore = BooleanField()
-    importcount = IntegerField(db_column='importCount')
-    path = UnknownField(primary_key=True)  # VARCHAR
+    importcount = IntegerField(column_name='importCount')
+    path = CharField(primary_key=True)
 
     class Meta:
-        db_table = 'ImportHistory'
+        table_name = 'ImportHistory'
 
 class Lastreadstates(BaseModel):
-    documentid = ForeignKeyField(db_column='documentId', rel_model=Documents, to_field='id')
-    hash = UnknownField()  # VARCHAR
-    horizontalposition = UnknownField(db_column='horizontalPosition', null=True)  # FLOAT
+    documentid = ForeignKeyField(column_name='documentId', field='id', model=Documents)
+    hash = CharField()
+    horizontalposition = FloatField(column_name='horizontalPosition', null=True)
     page = IntegerField()
     rotation = IntegerField(null=True)
-    status = UnknownField(null=True)  # VARCHAR
-    timestamp = UnknownField(null=True)  # VARCHAR
-    verticalposition = UnknownField(db_column='verticalPosition')  # FLOAT
-    zoomfactor = UnknownField(db_column='zoomFactor', null=True)  # FLOAT
-    zoommode = IntegerField(db_column='zoomMode', null=True)
+    status = CharField(null=True)
+    timestamp = CharField(null=True)
+    verticalposition = FloatField(column_name='verticalPosition')
+    zoomfactor = FloatField(column_name='zoomFactor', null=True)
+    zoommode = IntegerField(column_name='zoomMode', null=True)
 
     class Meta:
-        db_table = 'LastReadStates'
+        table_name = 'LastReadStates'
         indexes = (
             (('documentid', 'hash'), True),
         )
         primary_key = CompositeKey('documentid', 'hash')
 
 class Notduplicates(BaseModel):
-    uuid1 = UnknownField()  # CHAR[64]
-    uuid2 = UnknownField()  # CHAR[64]
+    uuid1 = CharField()
+    uuid2 = CharField()
 
     class Meta:
-        db_table = 'NotDuplicates'
+        table_name = 'NotDuplicates'
         indexes = (
             (('uuid1', 'uuid2'), True),
         )
         primary_key = CompositeKey('uuid1', 'uuid2')
 
 class Profiles(BaseModel):
-    clientdata = TextField(db_column='clientData', null=True)
-    displayname = UnknownField(db_column='displayName', null=True)  # VARCHAR
-    firstname = UnknownField(db_column='firstName', null=True)  # VARCHAR
-    isself = IntegerField(db_column='isSelf')
-    lastname = UnknownField(db_column='lastName', null=True)  # VARCHAR
+    clientdata = TextField(column_name='clientData', null=True)
+    displayname = CharField(column_name='displayName', null=True)
+    firstname = CharField(column_name='firstName', null=True)
+    isself = IntegerField(column_name='isSelf')
+    lastname = CharField(column_name='lastName', null=True)
     lastsync = TextField(null=True)
-    link = UnknownField(null=True)  # VARCHAR
+    link = CharField(null=True)
     photo = BlobField(null=True)
-    uuid = UnknownField(primary_key=True)  # VARCHAR
+    uuid = CharField(primary_key=True)
 
     class Meta:
-        db_table = 'Profiles'
+        table_name = 'Profiles'
 
 class Remotedocumentnotes(BaseModel):
     revision = IntegerField()
-    status = UnknownField()  # VARCHAR
-    uuid = UnknownField(null=True, primary_key=True)  # CHAR[38]
+    status = CharField()
+    uuid = CharField(null=True, primary_key=True)
 
     class Meta:
-        db_table = 'RemoteDocumentNotes'
+        table_name = 'RemoteDocumentNotes'
 
 class Remotedocuments(BaseModel):
-    documentid = IntegerField(db_column='documentId', index=True, null=True)
-    groupid = IntegerField(db_column='groupId')
-    intrash = BooleanField(db_column='inTrash')
-    remoteid = IntegerField(db_column='remoteId', null=True)
-    remoteuuid = UnknownField(db_column='remoteUuid', null=True, unique=True)  # VARCHAR
-    status = UnknownField()  # VARCHAR
+    documentid = IntegerField(column_name='documentId', index=True, null=True)
+    groupid = IntegerField(column_name='groupId')
+    intrash = BooleanField(column_name='inTrash')
+    remoteid = IntegerField(column_name='remoteId', null=True)
+    remoteuuid = CharField(column_name='remoteUuid', null=True, unique=True)
+    status = CharField()
 
     class Meta:
-        db_table = 'RemoteDocuments'
+        table_name = 'RemoteDocuments'
         indexes = (
             (('documentid', 'remoteuuid'), True),
         )
@@ -446,75 +446,75 @@ class Remotedocuments(BaseModel):
 
 class Remotefilehighlights(BaseModel):
     revision = IntegerField()
-    status = UnknownField()  # VARCHAR
-    uuid = UnknownField(null=True, primary_key=True)  # CHAR[38]
+    status = CharField()
+    uuid = CharField(null=True, primary_key=True)
 
     class Meta:
-        db_table = 'RemoteFileHighlights'
+        table_name = 'RemoteFileHighlights'
 
 class Remotefilenotes(BaseModel):
     revision = IntegerField()
-    status = UnknownField()  # VARCHAR
-    uuid = UnknownField(null=True, primary_key=True)  # CHAR[38]
+    status = CharField()
+    uuid = CharField(null=True, primary_key=True)
 
     class Meta:
-        db_table = 'RemoteFileNotes'
+        table_name = 'RemoteFileNotes'
 
 class Remotefolders(BaseModel):
-    folderid = PrimaryKeyField(db_column='folderId', null=True)
-    groupid = IntegerField(db_column='groupId', null=True)
-    parentremoteid = IntegerField(db_column='parentRemoteId', null=True)
-    remoteid = IntegerField(db_column='remoteId', null=True)
-    remoteuuid = UnknownField(db_column='remoteUuid', null=True, unique=True)  # VARCHAR
-    status = UnknownField()  # VARCHAR
+    folderid = AutoField(column_name='folderId', null=True)
+    groupid = IntegerField(column_name='groupId', null=True)
+    parentremoteid = IntegerField(column_name='parentRemoteId', null=True)
+    remoteid = IntegerField(column_name='remoteId', null=True)
+    remoteuuid = CharField(column_name='remoteUuid', null=True, unique=True)
+    status = CharField()
     version = IntegerField()
 
     class Meta:
-        db_table = 'RemoteFolders'
+        table_name = 'RemoteFolders'
 
 class Resources(BaseModel):
-    icondata = BlobField(db_column='iconData', null=True)
-    id = UnknownField(null=True, primary_key=True)  # VARCHAR
-    type = UnknownField()  # VARCHAR
+    icondata = BlobField(column_name='iconData', null=True)
+    id = CharField(null=True, primary_key=True)
+    type = CharField()
 
     class Meta:
-        db_table = 'Resources'
+        table_name = 'Resources'
 
 class Runssincelastcleanup(BaseModel):
     time = DateTimeField()
 
     class Meta:
-        db_table = 'RunsSinceLastCleanup'
+        table_name = 'RunsSinceLastCleanup'
         primary_key = False
 
 class Schemaversion(BaseModel):
-    key = UnknownField(null=True, primary_key=True)  # VARCHAR
+    key = CharField(null=True, primary_key=True)
     value = IntegerField()
 
     class Meta:
-        db_table = 'SchemaVersion'
+        table_name = 'SchemaVersion'
 
 class Settings(BaseModel):
-    key = UnknownField(primary_key=True)  # VARCHAR
+    key = CharField(primary_key=True)
     value = UnknownField(null=True)  # 
 
     class Meta:
-        db_table = 'Settings'
+        table_name = 'Settings'
 
 class Stats(BaseModel):
-    action = CharField(db_column='Action', primary_key=True)
-    counter = IntegerField(db_column='Counter')
+    action = CharField(column_name='Action', primary_key=True)
+    counter = IntegerField(column_name='Counter')
 
     class Meta:
-        db_table = 'Stats'
+        table_name = 'Stats'
 
 class Synctokens(BaseModel):
-    groupid = IntegerField(db_column='groupId', index=True)
-    token = UnknownField()  # VARCHAR
-    type = UnknownField(index=True)  # VARCHAR
+    groupid = IntegerField(column_name='groupId', constraints=[SQL("DEFAULT 0")], index=True)
+    token = CharField()
+    type = CharField(index=True)
 
     class Meta:
-        db_table = 'SyncTokens'
+        table_name = 'SyncTokens'
         indexes = (
             (('groupid', 'type'), True),
         )
@@ -524,7 +524,7 @@ class Zoterolastsync(BaseModel):
     time = IntegerField()
 
     class Meta:
-        db_table = 'ZoteroLastSync'
+        table_name = 'ZoteroLastSync'
         primary_key = False
 
 class SqliteSequence(BaseModel):
@@ -532,6 +532,6 @@ class SqliteSequence(BaseModel):
     seq = UnknownField(null=True)  # 
 
     class Meta:
-        db_table = 'sqlite_sequence'
+        table_name = 'sqlite_sequence'
         primary_key = False
 
