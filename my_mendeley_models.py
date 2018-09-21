@@ -10,8 +10,7 @@ class BaseModel(Model):
 
 # List of Mendeley fields of interest
 class Document(BaseModel):
-    id = IntegerField(db_column='id', primary_key=True, null=False, index=True)
-
+    # id = IntegerField(db_column='id', primary_key=True, null=False, index=True)
     abstract = CharField(null=True)
     added = IntegerField(null=True)
     arxivid = CharField(db_column='arxivId', null=True)
@@ -44,3 +43,25 @@ class Author(BaseModel):
 
     class Meta:
         db_table = 'DocumentContributors'
+
+
+class Url(BaseModel):
+    documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='urls')
+    position = IntegerField()
+    url = CharField()
+
+    class Meta:
+        db_table = 'DocumentUrls'
+
+
+# class Documenturls(BaseModel):
+#     documentid = IntegerField(column_name='documentId')
+#     position = IntegerField()
+#     url = CharField()
+#
+#     class Meta:
+#         table_name = 'DocumentUrls'
+#         indexes = (
+#             (('documentid', 'position'), True),
+#         )
+#         primary_key = CompositeKey('documentid', 'position')

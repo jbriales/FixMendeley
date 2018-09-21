@@ -65,11 +65,17 @@ def main():
     print("========================")
     # query = Document.select().where(Document.citationkey == 'Shahrian2013').prefetch(Author)
     query = Document.select().prefetch(Author)
+    # query = Document.select().prefetch(Author, Url)
+    # query = Document.select().prefetch([Author, Url])
     with db.atomic():
         for doc in query:
             print("{}: {}".format(doc.id, doc.title))
+            print("Authors:")
             for author in doc.authors:
-                print("{}, {}".format(author.lastname, author.firstnames))
+                print("- {}, {}".format(author.lastname, author.firstnames))
+            # print("URLs:")
+            # for url in doc.urls:
+            #     print("- {}: {}".format(url.position, url.url))
 
             entry = {
                 'ENTRYTYPE': mend_to_bib_types[doc.type],
