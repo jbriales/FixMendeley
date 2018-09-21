@@ -7,6 +7,7 @@ class BaseModel(Model):
     class Meta:
         database = database
 
+
 # List of Mendeley fields of interest
 class Document(BaseModel):
     abstract = CharField(null=True)
@@ -33,13 +34,10 @@ class Document(BaseModel):
         db_table = 'Documents'
 
 
+class Author(BaseModel):
+    documentid = IntegerField(db_column='documentId', index=True)
+    firstnames = CharField(db_column='firstNames', null=True)
+    lastname = CharField(db_column='lastName')
 
-@inproceedings{dube2016non,
-author = {Dub{\'{e}}, Renaud and Sommer, Hannes and Gawel, Abel and Bosse, Michael and Siegwart, Roland},
-booktitle = {Robot. Autom. (ICRA), 2016 IEEE Int. Conf.},
-file = {:home/jesus/.local/share/data/Mendeley Ltd./Mendeley Desktop/Downloaded/Dub{\'{e}} et al. - 2016 - Non-uniform sampling strategies for continuous correction based trajectory estimation.pdf:pdf},
-organization = {IEEE},
-pages = {4792--4798},
-title = {{Non-uniform sampling strategies for continuous correction based trajectory estimation}},
-year = {2016}
-}
+    class Meta:
+        db_table = 'DocumentContributors'
