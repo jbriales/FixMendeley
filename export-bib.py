@@ -11,8 +11,8 @@ import json
 import os
 import subprocess
 
-# from my_mendeley_models import *
-from mendeley_models import *
+from my_mendeley_models import *
+# from mendeley_models import *
 
 db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 
@@ -39,17 +39,48 @@ def main():
     #     }]
 
     # Populate bibtex database from Mendeley database via peewee
-    for doc in Documents.select():
-        # print(doc.title)
-        entry = {
-            'ENTRYTYPE': mend_to_bib_types[doc.type],
-            'ID': doc.citationkey,
-            'title': doc.title
-        }
-        if not entry['ID']:
-            print(colored("Missing key for %s" % doc.title, 'red'))
-            continue
-        bibdb.entries.append(entry)
+    print("Print only titles")
+    print("=================")
+    query = Document.select().limit(3)
+    with db.atomic():
+        for doc in query:
+            print("{}: {}".format(doc.id, doc.title))
+
+    print("")
+    print("Print titles and authors")
+    print("========================")
+    query = Document.select().limit(3).prefetch(Author)
+    with db.atomic():
+        for doc in query:
+            print("{}: {}".format(doc.id, doc.title))
+            for author in doc.authors:
+                print("{}, {}".format(author.lastname, author.firstnames))
+
+    # query = Document.select().where(Document.citationkey == 'Shahrian2013')
+    # query = Document.select(Document, Author).join(Author, on=(Document.id == Author.documentid))
+    # query = Document.select().join(Author)
+    # query = Document.select().prefetch(Author)
+    print("")
+    print("Print all id, titles and authors")
+    print("========================")
+    # query = Document.select().where(Document.citationkey == 'Shahrian2013').prefetch(Author)
+    query = Document.select().prefetch(Author)
+    with db.atomic():
+        for doc in query:
+            print("{}: {}".format(doc.id, doc.title))
+            for author in doc.authors:
+                print("{}, {}".format(author.lastname, author.firstnames))
+
+            entry = {
+                'ENTRYTYPE': mend_to_bib_types[doc.type],
+                'ID': doc.citationkey,
+                'title': doc.title,
+                'author': ' and '.join([author.lastname+', '+author.firstnames for author in doc.authors])
+            }
+            if not entry['ID']:
+                print(colored("Missing key for %s" % doc.title, 'red'))
+                continue
+            bibdb.entries.append(entry)
 
     # Write bibtex database to file
     writer = BibTexWriter()

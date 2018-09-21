@@ -1,0 +1,9 @@
+{
+  "Book": "book",
+  "BookSection": "inbook",
+  "ConferenceProceedings": "inproceedings",
+  "Generic": "misc",
+  "JournalArticle": "article",
+  "Report": "techreport",
+  "Thesis": "phdthesis"
+}

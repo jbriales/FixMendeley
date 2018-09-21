@@ -10,6 +10,8 @@ class BaseModel(Model):
 
 # List of Mendeley fields of interest
 class Document(BaseModel):
+    id = IntegerField(db_column='id', primary_key=True, null=False, index=True)
+
     abstract = CharField(null=True)
     added = IntegerField(null=True)
     arxivid = CharField(db_column='arxivId', null=True)
@@ -35,7 +37,8 @@ class Document(BaseModel):
 
 
 class Author(BaseModel):
-    documentid = IntegerField(db_column='documentId', index=True)
+    # documentid = IntegerField(db_column='documentId', index=True)
+    documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, unique=True, backref='authors')
     firstnames = CharField(db_column='firstNames', null=True)
     lastname = CharField(db_column='lastName')
 
