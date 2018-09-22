@@ -61,6 +61,10 @@ def main():
             for author in doc.authors:
                 print("{}, {}".format(author.lastname, author.firstnames))
 
+    # Preallocate lists to check sanity
+    missing_publications = list()
+    missing_publisher = list()
+
     # query = Document.select().where(Document.citationkey == 'Shahrian2013')
     # query = Document.select(Document, Author).join(Author, on=(Document.id == Author.documentid))
     # query = Document.select().join(Author)
@@ -70,7 +74,7 @@ def main():
     print("========================")
     # query = Document.select().where(Document.citationkey == 'Shahrian2013').prefetch(Author)
     # query = Document.select().prefetch(Author)
-    query = Document.select().prefetch(Author, Url, Tag).limit(2)
+    query = Document.select().prefetch(Author, Url, Tag)
     # query = Document.select().prefetch([Author, Url])
     with db.atomic():
         for doc in query:
@@ -95,8 +99,8 @@ def main():
             # Setup where publication venue is written
             dict_publication = {
                 'article': 'journal',
-                'book': 'publisher',
-                'inbook': 'publisher',
+                # 'book': 'publisher',
+                # 'inbook': 'publisher',
                 'inproceedings': 'booktitle',
                 # Nothing for misc
                 # Nothing for techreport
@@ -104,7 +108,15 @@ def main():
             }
             if entry['ENTRYTYPE'] in dict_publication:
                 bibtex_key = dict_publication[entry['ENTRYTYPE']]
-                entry[bibtex_key] = doc.publication
+                if doc.publication:
+                    entry[bibtex_key] = doc.publication
+                else:
+                    missing_publications.append(doc.citationkey)
+            elif entry['ENTRYTYPE'] in ['book', 'inbook']:
+                if doc.publisher:
+                    entry['publisher'] = doc.publisher
+                else:
+                    missing_publisher.append(doc.citationkey)
 
             if not entry['ID']:
                 print(colored("Missing key for %s" % doc.title, 'red'))

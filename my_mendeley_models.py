@@ -25,6 +25,7 @@ class Document(BaseModel):
     month = IntegerField(null=True)
     pages = CharField(null=True)
     publication = CharField(null=True)
+    publisher = CharField(null=True)
     sourcetype = CharField(db_column='sourceType', null=True)
     title = CharField(null=True)
     type = CharField(null=True)
