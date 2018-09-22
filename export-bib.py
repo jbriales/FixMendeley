@@ -129,6 +129,10 @@ def main():
             else:
                 missing['year'].append(doc.citationkey)
 
+            # Write pages
+            if doc.pages:
+                entry['pages'] = doc.pages
+
             if not entry['ID']:
                 print(colored("Missing key for %s" % doc.title, 'red'))
                 continue
