@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 """
-Documentation
+Export Mendeley database into my custom bibtex file
 """
 
 from bibtexparser.bwriter import BibTexWriter
