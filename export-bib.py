@@ -15,6 +15,11 @@ from my_mendeley_models import *
 # from mendeley_models import *
 
 db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
+# DEBUG: Print all queries to stderr.
+# import logging
+# logger = logging.getLogger('peewee')
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.DEBUG)
 
 mend_to_bib_types = json.load(open('mend2bib.json', 'r'))
 
@@ -65,7 +70,7 @@ def main():
     print("========================")
     # query = Document.select().where(Document.citationkey == 'Shahrian2013').prefetch(Author)
     # query = Document.select().prefetch(Author)
-    query = Document.select().prefetch(Author, Url)
+    query = Document.select().prefetch(Author, Url, Tag).limit(2)
     # query = Document.select().prefetch([Author, Url])
     with db.atomic():
         for doc in query:
@@ -76,13 +81,31 @@ def main():
             print("URLs:")
             for url in doc.urls:
                 print("- {}: {}".format(url.position, url.url))
+            print("Tags:")
+            for tag in doc.tags:
+                print("- {}".format(tag.tag))
 
+            # Allocate common fields
             entry = {
                 'ENTRYTYPE': mend_to_bib_types[doc.type],
                 'ID': doc.citationkey,
                 'title': doc.title,
                 'author': ' and '.join([author.lastname+', '+author.firstnames for author in doc.authors])
             }
+            # Setup where publication venue is written
+            dict_publication = {
+                'article': 'journal',
+                'book': 'publisher',
+                'inbook': 'publisher',
+                'inproceedings': 'booktitle',
+                # Nothing for misc
+                # Nothing for techreport
+                # Nothing for phdthesis
+            }
+            if entry['ENTRYTYPE'] in dict_publication:
+                bibtex_key = dict_publication[entry['ENTRYTYPE']]
+                entry[bibtex_key] = doc.publication
+
             if not entry['ID']:
                 print(colored("Missing key for %s" % doc.title, 'red'))
                 continue

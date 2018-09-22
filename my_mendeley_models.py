@@ -37,7 +37,7 @@ class Document(BaseModel):
 
 class Author(BaseModel):
     # documentid = IntegerField(db_column='documentId', index=True)
-    documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, unique=True, backref='authors')
+    documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='authors')
     firstnames = CharField(db_column='firstNames', null=True)
     lastname = CharField(db_column='lastName')
 
@@ -60,7 +60,7 @@ class Url(BaseModel):
 
 
 class Tag(BaseModel):
-    documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='urls')
+    documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='tags')
     tag = CharField()
 
     class Meta:
