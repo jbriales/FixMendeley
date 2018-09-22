@@ -62,8 +62,10 @@ def main():
                 print("{}, {}".format(author.lastname, author.firstnames))
 
     # Preallocate lists to check sanity
-    missing_publications = list()
-    missing_publisher = list()
+    missing = dict()
+    missing['publication'] = list()
+    missing['publisher'] = list()
+    missing['year'] = list()
 
     # query = Document.select().where(Document.citationkey == 'Shahrian2013')
     # query = Document.select(Document, Author).join(Author, on=(Document.id == Author.documentid))
@@ -96,7 +98,8 @@ def main():
                 'title': doc.title,
                 'author': ' and '.join([author.lastname+', '+author.firstnames for author in doc.authors])
             }
-            # Setup where publication venue is written
+
+            # Write publication
             dict_publication = {
                 'article': 'journal',
                 # 'book': 'publisher',
@@ -111,12 +114,20 @@ def main():
                 if doc.publication:
                     entry[bibtex_key] = doc.publication
                 else:
-                    missing_publications.append(doc.citationkey)
-            elif entry['ENTRYTYPE'] in ['book', 'inbook']:
+                    missing['publication'].append(doc.citationkey)
+
+            # Write publisher
+            if entry['ENTRYTYPE'] in ['book', 'inbook']:
                 if doc.publisher:
                     entry['publisher'] = doc.publisher
                 else:
-                    missing_publisher.append(doc.citationkey)
+                    missing['publisher'].append(doc.citationkey)
+
+            # Write year
+            if doc.year:
+                entry['year'] = str(doc.year)
+            else:
+                missing['year'].append(doc.citationkey)
 
             if not entry['ID']:
                 print(colored("Missing key for %s" % doc.title, 'red'))
