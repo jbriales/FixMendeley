@@ -223,6 +223,12 @@ def main():
         repeated_citationkeys.append(entry.citationkey)
     print(colored("There are %s repeated citation keys" % len(repeated_citationkeys), 'red'))
 
+    for citationkey in repeated_citationkeys:
+        query = Document.select().prefetch(Author, Url, Tag).where(Document.citationkey == citationkey)
+        print("Fixing %s" % citationkey)
+        print("===================")
+        fuse_fields(query, do_delete_remaining=do_delete)
+
     return True
 
     # Find repeated keys
