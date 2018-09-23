@@ -90,14 +90,41 @@ def main():
                 set_urls.add(url.url)
                 # TODO: Delete this (will be created again later)
         # Create new URLs linked to base document
+        # Document-URL relation is one-to-many
+        # Each row in DocumentUrls has fields 'documentid', 'position' and 'url'
+        # We can rewrite URLs in whichever order (or not? depends on how we can to export URLs later)
         print(colored("Creating DocumentUrls entries for doc <%s>" % base_doc.id, 'yellow'))
         for idx, url in enumerate(set_urls):
             print('%s %s' % (idx, url))
             new_url = Url(documentid=base_doc.id, position=idx, url=url)
             try:
-                num_new_urls = new_url.save(force_insert=True)
+                num_new_rows = new_url.save(force_insert=True)
+                assert num_new_rows > 0, colored("ERROR: No row was created", 'red')
             except IntegrityError:
                 print(colored('ERROR: Entry already exists', 'red'))
+
+        # Gather all tags
+        set_tags = set()
+        for doc in query:
+            for tag in doc.tags:
+                set_tags.add(tag.tag)
+                # TODO: Delete this (will be created again later)
+        # Create new tags linked to base document
+        # Document-tag relation is one-to-many
+        # Each row in DocumentUrls has fields 'documentid' and 'tag'
+        print(colored("Creating DocumentTags entries for doc <%s>" % base_doc.id, 'yellow'))
+        for tag in set_tags:
+            new_tag = Tag(documentid=base_doc.id, tag=tag)
+            try:
+                num_new_rows = new_tag.save(force_insert=True)
+                assert num_new_rows > 0, colored("ERROR: No row was created", 'red')
+            except IntegrityError:
+                print(colored('ERROR: Entry already exists', 'red'))
+
+        # About authors
+        # Document-Author relation is one-to-many
+        # Each row in DocumentContributors has fields 'documentid', 'contribution', 'firsnames' and 'lastname'
+        # TODO: Author list should be fine for every document, but fix right names
 
         for field in fields_of_interest:
             values = [getattr(doc, field) for doc in query]

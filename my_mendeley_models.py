@@ -40,7 +40,6 @@ class Document(BaseModel):
 
 
 class Author(BaseModel):
-    # documentid = IntegerField(db_column='documentId', index=True)
     documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='authors')
     firstnames = CharField(db_column='firstNames', null=True)
     lastname = CharField(db_column='lastName')
@@ -50,7 +49,6 @@ class Author(BaseModel):
 
 
 class Url(BaseModel):
-    # documentid = IntegerField(column_name='documentId')
     documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='urls')
     position = IntegerField()
     url = CharField()
