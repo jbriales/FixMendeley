@@ -41,6 +41,9 @@ fields_of_interest = [
     # 'dateaccessed', # not important
     'doi',
     'institution',
+    'isbn',
+    'issn',
+    'issue',
     'month',
     'pages',
     'publication',
@@ -78,19 +81,23 @@ def main():
         base_doc = query[0]
         base_doc.importer = 'PythonImporter'
 
-        # import inspect
-        # # is_a_field = lambda a: (not inspect.isroutine(a)) and (not a.startswith('_'))
-        # is_an_attribute = lambda a: (not inspect.isroutine(a))
-        # attributes = inspect.getmembers(Document, is_an_attribute)
-        # db_fields = [a for a in attributes if not(a[0].startswith('_'))]
-
-        # Pick title
-        # titles = [doc.title for doc in query]
-        # title = set(titles)
-        # if len(title) > 1:
-        #     print(colored("ERROR: conflicting titles", 'red'), *titles, sep='\n')
-        # else:
-        #     new_doc.title = title
+        # Gather all URLs
+        set_urls = set()
+        for doc in query:
+            print("id %s" % doc.id)
+            for url in doc.urls:
+                print("- {}: {}".format(url.position, url.url))
+                set_urls.add(url.url)
+                # TODO: Delete this (will be created again later)
+        # Create new URLs linked to base document
+        print(colored("Creating DocumentUrls entries for doc <%s>" % base_doc.id, 'yellow'))
+        for idx, url in enumerate(set_urls):
+            print('%s %s' % (idx, url))
+            new_url = Url(documentid=base_doc.id, position=idx, url=url)
+            try:
+                num_new_urls = new_url.save(force_insert=True)
+            except IntegrityError:
+                print(colored('ERROR: Entry already exists', 'red'))
 
         for field in fields_of_interest:
             values = [getattr(doc, field) for doc in query]
