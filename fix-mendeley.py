@@ -58,6 +58,9 @@ fields_of_interest = [
 conflict_solver = dict()
 conflict_solver['added'] = min
 
+# Delete repeated entries once fused in once
+do_delete = True
+
 
 def main():
     # Organize docs into a dictionary by citation key to find conflicts
@@ -178,6 +181,13 @@ def main():
 
         print(colored("Rewriting values in doc id %s" % base_doc.id, 'yellow'))
         num_modified_rows = base_doc.save()
+        assert num_modified_rows > 0, colored("ERROR: No row was modified", 'red')
+
+        if do_delete:
+            # Delete redundant rows (skipping base document)
+            for doc in query[1:]:
+                num_deleted_rows = doc.delete_instance()
+                assert num_deleted_rows > 0, "Row was not removed"
 
     return True
 
