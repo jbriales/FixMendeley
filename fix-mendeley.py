@@ -16,9 +16,27 @@ db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 # logger.setLevel(logging.DEBUG)
 
 
+# @db.aggregate('myfun')
+# class myfun(object):
+#     def __init__(self):
+#         self.entries = []
+#
+#     def step(self, doc):
+#         self.entries.append(doc)
+#
+#     def finalize(self):
+#         return self.entries
+
+
 def main():
     # Organize docs into a dictionary by citation key to find conflicts
     docs_by_key = dict()
+
+    # # Find repeated keys and group docs together
+    # query = Document.select(fn.myfun(Document)).prefetch(Author, Url, Tag).group_by(Document.citationkey)
+    # with db.atomic():
+    #     for elem in query:
+    #         print("Sth")
 
     # Find repeated keys
     query = Document.select().prefetch(Author, Url, Tag).order_by(Document.citationkey)
@@ -38,10 +56,11 @@ def main():
                     print("- {}".format(doc.title))
 
     print("Docs with conflicting key")
-    for key, entries in docs_by_key.items():
-        print("Citation key: " + key)
-        for entry in entries:
-            print("{id}:\t{citationkey} -> {title}".format(**entry))
+    if True:
+        for key, entries in docs_by_key.items():
+            print("Citation key: " + key)
+            for entry in entries:
+                print("{id}:\t{citationkey} -> {title}".format(**entry))
 
     return True
 
