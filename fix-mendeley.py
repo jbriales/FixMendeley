@@ -7,6 +7,7 @@ Explore and fix different Mendeley database issues
 from termcolor import colored
 
 from my_mendeley_models import *
+# from .scripts.pwizmodels2mymodels import fields_of_interest
 
 db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 # DEBUG: Print all queries to stderr.
@@ -28,6 +29,33 @@ db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 #         return self.entries
 
 
+fields_of_interest = [
+    'abstract',
+    'added',
+    # 'modified', # not important
+    # 'importer', # give manually
+    'arxivid',
+    'citationkey',
+    'city',
+    'country',
+    # 'dateaccessed', # not important
+    'doi',
+    'institution',
+    'month',
+    'pages',
+    'publication',
+    'publisher',
+    'sourcetype',
+    'title',
+    'type',
+    'volume',
+    'year',
+]
+
+conflict_solver = dict()
+conflict_solver['added'] = min
+
+
 def main():
     # Organize docs into a dictionary by citation key to find conflicts
     docs_by_key = dict()
@@ -37,6 +65,57 @@ def main():
     # with db.atomic():
     #     for elem in query:
     #         print("Sth")
+
+    # Fix documents with repeated keys
+    citation_key = 'Kanatani1988'
+    query = Document.select().prefetch(Author, Url, Tag).where(Document.citationkey == citation_key)
+    with db.atomic():
+        # Create new doc that gathers all available information (if not conflicting)
+        # base_doc = Document()
+        # base_doc.citationkey = citation_key
+        # Use first doc in the query as base (to keep non-trivial fields already populated)
+        # base_doc = query.first()
+        base_doc = query[0]
+        base_doc.importer = 'PythonImporter'
+
+        # import inspect
+        # # is_a_field = lambda a: (not inspect.isroutine(a)) and (not a.startswith('_'))
+        # is_an_attribute = lambda a: (not inspect.isroutine(a))
+        # attributes = inspect.getmembers(Document, is_an_attribute)
+        # db_fields = [a for a in attributes if not(a[0].startswith('_'))]
+
+        # Pick title
+        # titles = [doc.title for doc in query]
+        # title = set(titles)
+        # if len(title) > 1:
+        #     print(colored("ERROR: conflicting titles", 'red'), *titles, sep='\n')
+        # else:
+        #     new_doc.title = title
+
+        for field in fields_of_interest:
+            values = [getattr(doc, field) for doc in query]
+            values = [x for x in values if x is not None]
+            if values:
+                set_values = set(values)
+            else:
+                set_values = {None}
+
+            if len(set_values) > 1:
+                if field in conflict_solver:
+                    value = conflict_solver[field](values)
+                else:
+                    print(colored("ERROR: conflicting %s" % field, 'red'), *set_values, sep='\n')
+                    value = input("Give manual value: ")
+                    # TODO: Fix by hand via input?
+            else:
+                # Keep single element from set unpacking
+                (value,) = set_values
+            setattr(base_doc, field, value)
+
+        print(colored("Rewriting values in doc id %s" % base_doc.id, 'yellow'))
+        num_modified_rows = base_doc.save()
+
+    return True
 
     # Find repeated keys
     query = Document.select().prefetch(Author, Url, Tag).order_by(Document.citationkey)
