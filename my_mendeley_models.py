@@ -71,3 +71,25 @@ class Tag(BaseModel):
             (('documentid', 'tag'), True),
         )
         primary_key = CompositeKey('documentid', 'tag')
+
+
+class File(BaseModel):
+    hash = CharField(null=True, primary_key=True)
+    localurl = CharField(column_name='localUrl')
+
+    class Meta:
+        table_name = 'Files'
+
+
+class DocumentFile(BaseModel):
+    documentid = ForeignKeyField(column_name='documentId', field='id', model=Document, backref='files')
+    # documentid = IntegerField(column_name='documentId', index=True)
+    downloadrestricted = BooleanField(column_name='downloadRestricted', constraints=[SQL("DEFAULT 0")])
+    # hash = ForeignKeyField(column_name='hash', field='hash', model=File, index=True, backref='docs')
+    hash = CharField(index=True)
+    remotefileuuid = CharField(column_name='remoteFileUuid', constraints=[SQL("DEFAULT ''")])
+    unlinked = BooleanField()
+
+    class Meta:
+        table_name = 'DocumentFiles'
+        primary_key = False

@@ -11,10 +11,10 @@ from my_mendeley_models import *
 
 db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 # DEBUG: Print all queries to stderr.
-# import logging
-# logger = logging.getLogger('peewee')
-# logger.addHandler(logging.StreamHandler())
-# logger.setLevel(logging.DEBUG)
+import logging
+logger = logging.getLogger('peewee')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
 
 
 # @db.aggregate('myfun')
@@ -81,6 +81,16 @@ def main():
         base_doc = query[0]
         base_doc.importer = 'PythonImporter'
 
+        # About authors
+        # Document-Author relation is one-to-many
+        # Each row in DocumentContributors has fields 'documentid', 'contribution', 'firsnames' and 'lastname'
+        # TODO: Author list should be fine for every document, but fix right names
+        # Sanity check: every row has the same number of authors
+        set_nums = set()
+        for doc in query:
+            set_nums.add(len(doc.authors))
+        assert len(set_nums) == 1, "Conflicting lists of authors"
+
         # Gather all URLs
         set_urls = set()
         for doc in query:
@@ -121,11 +131,31 @@ def main():
             except IntegrityError:
                 print(colored('ERROR: Entry already exists', 'red'))
 
-        # About authors
-        # Document-Author relation is one-to-many
-        # Each row in DocumentContributors has fields 'documentid', 'contribution', 'firsnames' and 'lastname'
-        # TODO: Author list should be fine for every document, but fix right names
+        # Fix attached files (some entries miss the PDF doc)
+        # Table 'Files' contains 'hash' and 'localUrl' for every existing PDF file
+        # Table 'DocumentFiles' contains many-to-many correspondences between doc and files
+        # with each row having fields 'documentId', 'hash', 'remoteFileUuid'
+        # To attach PDF to doc, create row in DocumentFiles (many-to-many table)
+        # Gather all files for a certain doc
+        set_values = set()
+        for doc in query:
+            for pdf in doc.files:
+                print('id %s, hash %s, remote_uuid %s' % (pdf.documentid, pdf.hash, pdf.remotefileuuid))
+                set_values.add((pdf.hash, pdf.remotefileuuid))
+                # TODO: Delete this (will be created again later)
+        # Create new DocumentFile entries to attach PDFs to docs
+        # Document-tag relation is one-to-many
+        # Each row in DocumentUrls has fields 'documentid' and 'tag'
+        print(colored("Creating DocumentFiles entries for doc <%s>" % base_doc.id, 'yellow'))
+        for (hash, remotefileuuid) in set_values:
+            new_entry = DocumentFile(documentid=base_doc.id, hash=hash, remotefileuuid=remotefileuuid)
+            try:
+                num_new_rows = new_entry.save(force_insert=True)
+                assert num_new_rows > 0, colored("ERROR: No row was created", 'red')
+            except IntegrityError:
+                print(colored('ERROR: Entry already exists', 'red'))
 
+        # Combine fields in equivalent Document entries
         for field in fields_of_interest:
             values = [getattr(doc, field) for doc in query]
             values = [x for x in values if x is not None]
