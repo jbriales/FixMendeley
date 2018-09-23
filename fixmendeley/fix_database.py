@@ -6,6 +6,7 @@ Explore and fix different Mendeley database issues
 
 from termcolor import colored
 
+from peewee import SqliteDatabase
 from my_mendeley_models import *
 # from .scripts.pwizmodels2mymodels import fields_of_interest
 
