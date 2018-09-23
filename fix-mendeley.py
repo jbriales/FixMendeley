@@ -59,22 +59,15 @@ conflict_solver = dict()
 conflict_solver['added'] = min
 
 # Delete repeated entries once fused in once
-do_delete = True
+do_delete = False
 
 
-def main():
-    # Organize docs into a dictionary by citation key to find conflicts
-    docs_by_key = dict()
-
-    # # Find repeated keys and group docs together
-    # query = Document.select(fn.myfun(Document)).prefetch(Author, Url, Tag).group_by(Document.citationkey)
-    # with db.atomic():
-    #     for elem in query:
-    #         print("Sth")
-
-    # Fix documents with repeated keys
-    citation_key = 'Kanatani1988'
-    query = Document.select().prefetch(Author, Url, Tag).where(Document.citationkey == citation_key)
+def fuse_fields(query, do_delete_remaining=False):
+    """
+    Fuse fields from several potentially equivalent documents into first one
+    :param query: SQL query with conflicting/repeated rows
+    :param do_delete_remaining: delete repeated rows after collecting all fields in one
+    """
     with db.atomic():
         # Create new doc that gathers all available information (if not conflicting)
         # base_doc = Document()
@@ -183,11 +176,52 @@ def main():
         num_modified_rows = base_doc.save()
         assert num_modified_rows > 0, colored("ERROR: No row was modified", 'red')
 
-        if do_delete:
+        if do_delete_remaining:
             # Delete redundant rows (skipping base document)
             for doc in query[1:]:
                 num_deleted_rows = doc.delete_instance()
                 assert num_deleted_rows > 0, "Row was not removed"
+
+
+def main():
+    # Organize docs into a dictionary by citation key to find conflicts
+    docs_by_key = dict()
+
+    # Find repeated titles
+    query_repeated_rows = (
+        Document
+        .select(Document.title, fn.COUNT(Document.id).alias('num_entries'))
+        .group_by(Document.title)
+        .having(SQL('num_entries') > 1)
+    )
+    repeated_titles = list()
+    for entry in query_repeated_rows:
+        print("%s x %s" % (entry.title, entry.num_entries))
+        repeated_titles.append(entry.title)
+    print(colored("There are %s repeated titles" % len(repeated_titles), 'red'))
+
+    # Fuse fields of rows with repeated title into a single row
+    for title in repeated_titles:
+        query = Document.select().prefetch(Author, Url, Tag).where(Document.title == title)
+        print("Fixing %s" % title)
+        print("===================")
+        fuse_fields(query, do_delete_remaining=do_delete)
+
+    return True
+
+    # Find repeated citation keys
+    # SQL statement: `SELECT DataId, COUNT(*) c FROM DataTab GROUP BY DataId HAVING c > 1;`
+    query_repeated_rows = (
+        Document
+        .select(Document.citationkey, fn.COUNT(Document.id).alias('num_entries'))
+        .group_by(Document.citationkey)
+        .having(SQL('num_entries') > 1)
+    )
+    repeated_citationkeys = list()
+    for entry in query_repeated_rows:
+        print("%s x %s" % (entry.citationkey, entry.num_entries))
+        repeated_citationkeys.append(entry.citationkey)
+    print(colored("There are %s repeated citation keys" % len(repeated_citationkeys), 'red'))
 
     return True
 
