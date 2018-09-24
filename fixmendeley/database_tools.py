@@ -4,11 +4,22 @@
 Explore and fix different Mendeley database issues
 """
 
+import argparse
+import sys
 from termcolor import colored
 
 from peewee import SqliteDatabase
 from fixmendeley.my_mendeley_models import *
 # from .scripts.pwizmodels2mymodels import fields_of_interest
+
+parser = argparse.ArgumentParser(
+    description=__doc__,
+    epilog="By Jesus Briales"
+)
+subparsers = parser.add_subparsers()
+
+# Import other subcommand modules for completing the argument parser
+import fixmendeley.fix_venues
 
 db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 # DEBUG: Print all queries to stderr.
@@ -16,19 +27,6 @@ import logging
 logger = logging.getLogger('peewee')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
-
-
-# @db.aggregate('myfun')
-# class myfun(object):
-#     def __init__(self):
-#         self.entries = []
-#
-#     def step(self, doc):
-#         self.entries.append(doc)
-#
-#     def finalize(self):
-#         return self.entries
-
 
 fields_of_interest = [
     'abstract',
@@ -194,7 +192,7 @@ def fuse_fields(query, do_delete_remaining=False):
                 assert num_deleted_rows > 0, "Row was not removed"
 
 
-def main():
+def test_peewee():
     # Organize docs into a dictionary by citation key to find conflicts
     docs_by_key = dict()
 
@@ -270,6 +268,32 @@ def main():
                 print("{id}:\t{citationkey} -> {title}".format(**entry))
 
     return True
+
+
+test_peewee.parser = subparsers.add_parser(
+    'test-peewee',
+    description=test_peewee.__doc__)
+test_peewee.parser.set_defaults(func=test_peewee)
+
+
+from fixmendeley.fix_venues import fix_venues
+fix_venues.parser = subparsers.add_parser(
+    'fix-venues',
+    description=fix_venues.__doc__)
+fix_venues.parser.set_defaults(func=fix_venues)
+
+
+def main():
+    if len(sys.argv) <= 1:
+        parser.print_help()
+        return True
+
+    # NOTE: Can this be simplified? Check doc
+    kwargs = dict(parser.parse_args(sys.argv[1:])._get_kwargs())
+    func = kwargs.pop('func')
+
+    successful = func(**kwargs)
+    sys.exit(0 if successful else 1)
 
 
 if __name__ == '__main__':
