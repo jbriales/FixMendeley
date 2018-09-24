@@ -1,0 +1,136 @@
+[
+  {
+    "acronym": "ICRA",
+    "keywords": [
+      "Robot",
+      "Autom"
+    ],
+    "fullname": "International Conference on Robotics and Automation"
+  },
+  {
+    "acronym": "IROS",
+    "keywords": [
+      "Intell",
+      "Robot",
+      "Syst"
+    ],
+    "fullname": "International Conference on Intelligent Robots and Systems"
+  },
+  {
+    "acronym": "RSS",
+    "keywords": [
+      "Robot",
+      "Sci",
+      "Syst"
+    ],
+    "fullname": "Robotics: Science and Systems"
+  },
+  {
+    "acronym": "WAFR",
+    "keywords": [
+      "Alg",
+      "Found",
+      "Robot"
+    ],
+    "fullname": "International Workshop on the Algorithmic Foundations of Robotics"
+  },
+  {
+    "acronym": "TRO",
+    "keywords": [
+      "Trans",
+      "Robot"
+    ],
+    "fullname": "Transactions on Robotics"
+  },
+  {
+    "acronym": "IJRR",
+    "keywords": [
+      "Robot",
+      "Res"
+    ],
+    "fullname": "International Journal of Robotics Research"
+  },
+  {
+    "acronym": "NIPS",
+    "keywords": [
+      "Neur",
+      "Inf",
+      "Proc",
+      "Sys"
+    ],
+    "fullname": "Advances in Neural Information Processing Systems"
+  },
+  {
+    "acronym": "SIAM",
+    "keywords": [
+      "Matrix",
+      "Anal",
+      "Appl"
+    ],
+    "fullname": "Journal on Matrix Analysis and Applications"
+  },
+  {
+    "acronym": "JMLR",
+    "keywords": [
+      "Mach",
+      "Learn",
+      "Res"
+    ],
+    "fullname": "Journal of Machine Learning Research"
+  },
+  {
+    "acronym": "IV",
+    "keywords": [
+      "Intell",
+      "Vehicles"
+    ],
+    "fullname": "Intelligent Vehicles Symposium"
+  },
+  {
+    "acronym": "CVPR",
+    "keywords": [
+      "Vis",
+      "Pat",
+      "Recog"
+    ],
+    "fullname": "Conference on Computer Vision and Pattern Recognition"
+  },
+  {
+    "acronym": "ICCV",
+    "keywords": [
+      "Int",
+      "Conf",
+      "Comp",
+      "Vis"
+    ],
+    "fullname": "International Conference on Computer Vision"
+  },
+  {
+    "acronym": "ECCV",
+    "keywords": [
+      "Eur",
+      "Comp",
+      "Vis"
+    ],
+    "fullname": "European Conference on Computer Vision"
+  },
+  {
+    "acronym": "ACCV",
+    "keywords": [
+      "Asian",
+      "Comp",
+      "Vis"
+    ],
+    "fullname": "Asian Conference on Computer Vision"
+  },
+  {
+    "acronym": "IJCV",
+    "keywords": [
+      "Int",
+      "J",
+      "Comp",
+      "Vis"
+    ],
+    "fullname": "International Journal on Computer Vision"
+  }
+]
