@@ -63,12 +63,22 @@ conflict_solver['added'] = min
 do_delete = False
 
 
+def find_duplicates_and_fuse(field, value, do_delete_remaining=False):
+    query = Document.select().prefetch(Author, Url, Tag).where(getattr(Document, field) == value)
+    fuse_fields(query, do_delete_remaining=do_delete_remaining)
+
+
 def fuse_fields(query, do_delete_remaining=False):
     """
     Fuse fields from several potentially equivalent documents into first one
     :param query: SQL query with conflicting/repeated rows
     :param do_delete_remaining: delete repeated rows after collecting all fields in one
     """
+
+    # TEMP FIX for import?
+    # from .my_mendeley_models import Document, Author, Url, Tag, File, DocumentFile
+    # from my_mendeley_models import Document, Author, Url, Tag, File, DocumentFile
+
     with db.atomic():
         # Create new doc that gathers all available information (if not conflicting)
         # base_doc = Document()
@@ -200,6 +210,9 @@ def main():
         print("%s x %s" % (entry.title, entry.num_entries))
         repeated_titles.append(entry.title)
     print(colored("There are %s repeated titles" % len(repeated_titles), 'red'))
+
+    # Test peewee-agnostic function
+    find_duplicates_and_fuse('title', repeated_titles[0])
 
     # Fuse fields of rows with repeated title into a single row
     for title in repeated_titles:
