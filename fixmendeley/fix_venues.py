@@ -19,11 +19,29 @@ def fix_venues():
     with open(resource_filename('fixmendeley', 'venues.json'), 'r') as f:
         venues = json.load(f)
 
-    print(venues)
+    for venue in venues:
+        # Build filter pattern for keywords
+        ordered_keywords = venue['keywords'][0] + venue['keywords'][1]
+        reverse_keywords = venue['keywords'][1] + venue['keywords'][0]
+        pattern_ordered_keywords = '%' + '%'.join(ordered_keywords) + '%'
+        pattern_reverse_keywords = '%' + '%'.join(ordered_keywords) + '%'
+        pattern_acronym = '*' + venue['acronym'] + '*'
 
-    # For each conference/journal registered in our dictionary
+        query = (
+            Document
+            .select(Document.publication)
+            .where((Document.publication ** pattern_ordered_keywords) |
+                   (Document.publication ** pattern_reverse_keywords) |
+                   (Document.publication % ('*' + venue['acronym'] + '*')) |
+                   (Document.doi ** ('%' + venue['acronym'] + '%'))
+                   )
+        )
+        for entry in query:
+            print(entry.publication)
 
-    # Query for rows using ordered keywords
+        # For each conference/journal registered in our dictionary
 
-    # Set field with normalized value for all fields
+        # Query for rows using ordered keywords
+
+        # Set field with normalized value for all fields
     pass
