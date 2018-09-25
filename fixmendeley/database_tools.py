@@ -283,6 +283,15 @@ fix_venues.parser = subparsers.add_parser(
 fix_venues.parser.set_defaults(func=fix_venues)
 
 
+from fixmendeley.fix_via_dblp import fix_via_dblp
+fix_via_dblp.parser = subparsers.add_parser(
+    'fix_via_dblp',
+    description=fix_venues.__doc__)
+fix_via_dblp.parser.set_defaults(func=fix_via_dblp)
+
+
+
+
 def main():
     if len(sys.argv) <= 1:
         parser.print_help()

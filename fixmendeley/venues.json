@@ -35,9 +35,14 @@
     "fullname": "Advances in Neural Information Processing Systems"
   },
   {
-    "acronym": "SIAM",
+    "acronym": "SIOPT",
+    "keywords": [[],["Opt"]],
+    "fullname": "SIAM Journal on Optimization"
+  },
+  {
+    "acronym": "SIMAX",
     "keywords": [[],["Matrix","Anal","Appl"]],
-    "fullname": "Journal on Matrix Analysis and Applications"
+    "fullname": "SIAM Journal on Matrix Analysis and Applications"
   },
   {
     "acronym": "JMLR",
