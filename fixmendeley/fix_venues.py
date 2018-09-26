@@ -1,4 +1,7 @@
 # coding=utf-8
+"""
+Fix venues in Mendeley database
+"""
 
 from pkg_resources import resource_filename
 from termcolor import colored
