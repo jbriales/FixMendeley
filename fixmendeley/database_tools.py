@@ -23,10 +23,10 @@ import fixmendeley.fix_venues
 
 db = SqliteDatabase('jesusbriales@uma.es@www.mendeley.com.sqlite', **{})
 # DEBUG: Print all queries to stderr.
-import logging
-logger = logging.getLogger('peewee')
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
+# import logging
+# logger = logging.getLogger('peewee')
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.DEBUG)
 
 fields_of_interest = [
     'abstract',
@@ -54,11 +54,54 @@ fields_of_interest = [
     'year',
 ]
 
+
+def take_longest_string(values):
+    return max(values, key=lambda s: len(s))
+
+
 conflict_solver = dict()
 conflict_solver['added'] = min
+conflict_solver['year'] = max  # just fix it anyway, sick of this
+conflict_solver['pages'] = take_longest_string
+conflict_solver['publisher'] = take_longest_string
+conflict_solver['publication'] = take_longest_string
+
+
+def fix_title_conflict(values):
+    # Turn lowercase
+    # Remove punctuation and whitespace
+    from string import punctuation, whitespace
+    table = str.maketrans(dict.fromkeys(punctuation+whitespace))
+    lowercase_set = {
+        value.lower().translate(table)
+        for value in values}
+    if len(lowercase_set) == 1:
+        # min since 'A' < 'a'
+        return min(values)
+        # sum(1 for c in str if c.isupper())
+    else:
+        print("Titles:", *values, sep='\n')
+        raise Exception("Titles are too different")
+
+
+conflict_solver['title'] = fix_title_conflict
+
+
+def fix_type_conflict(values):
+    if {x for x in values} == {"ConferenceProceedings", "JournalArticle"}:
+        # In most of these conflicts, it's a conference
+        return "ConferenceProceedings"
+    else:
+        raise Exception("Unexpected document type")
+
+
+conflict_solver['type'] = fix_type_conflict
+
+
+
 
 # Delete repeated entries once fused in once
-do_delete = False
+global_do_delete = False
 
 
 def find_duplicates_and_fuse(field, value, do_delete_remaining=False):
@@ -92,9 +135,16 @@ def fuse_fields(query, do_delete_remaining=False):
         # TODO: Author list should be fine for every document, but fix right names
         # Sanity check: every row has the same number of authors
         set_nums = set()
+        set_authors = set()
         for doc in query:
             set_nums.add(len(doc.authors))
-        assert len(set_nums) == 1, "Conflicting lists of authors"
+            set_authors.add(tuple((a.firstnames, a.lastname) for a in doc.authors))
+        if len(set_nums) != 1:
+            print(colored("ERROR for %s -> %s: conflicting lists of authors"
+                          % (base_doc.citationkey, base_doc.title), 'red'))
+            from pprint import pprint
+            pprint(set_authors)
+            raise Exception("Conflicting lists of authors")
 
         # Gather all URLs
         set_urls = set()
@@ -161,6 +211,7 @@ def fuse_fields(query, do_delete_remaining=False):
                 print(colored('ERROR: Entry already exists', 'red'))
 
         # Combine fields in equivalent Document entries
+        print(colored("Combining fields for %s -> %s" % (base_doc.citationkey, base_doc.title), 'cyan'))
         for field in fields_of_interest:
             values = [getattr(doc, field) for doc in query]
             values = [x for x in values if x is not None]
@@ -173,9 +224,12 @@ def fuse_fields(query, do_delete_remaining=False):
                 if field in conflict_solver:
                     value = conflict_solver[field](values)
                 else:
-                    print(colored("ERROR: conflicting %s" % field, 'red'), *set_values, sep='\n')
+                    print(colored("ERROR for %s -> %s: conflicting %s" % (base_doc.citationkey, base_doc.title, field), 'red'),
+                          *set_values, sep='\n')
+                    raise Exception("TODO: Non-available conflict solver")
+                    # TODO: Keep longest publication (more explicit)
+                    # TODO: Keep title with uppercases (if equal)
                     value = input("Give manual value: ")
-                    # TODO: Fix by hand via input?
             else:
                 # Keep single element from set unpacking
                 (value,) = set_values
@@ -217,7 +271,7 @@ def test_peewee():
         query = Document.select().prefetch(Author, Url, Tag).where(Document.title == title)
         print("Fixing %s" % title)
         print("===================")
-        fuse_fields(query, do_delete_remaining=do_delete)
+        fuse_fields(query, do_delete_remaining=global_do_delete)
 
     return True
 
@@ -239,7 +293,7 @@ def test_peewee():
         query = Document.select().prefetch(Author, Url, Tag).where(Document.citationkey == citationkey)
         print("Fixing %s" % citationkey)
         print("===================")
-        fuse_fields(query, do_delete_remaining=do_delete)
+        fuse_fields(query, do_delete_remaining=global_do_delete)
 
     return True
 
