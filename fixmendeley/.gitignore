@@ -1,0 +1,25 @@
+.idea/*
+
+Metadata-Version: 1.0
+Name: FixMendeley
+Version: 0.1.dev0
+Summary: Fix Mendeley database conflicts and provide enhanced bib-export functionalities
+Home-page: https://github.com/jbriales/fixmendeley
+Author: jbriales
+Author-email: jesusbriales@gmail.com
+License: MIT
+Description: Python package to clean and fix conflicting Mendeley entries
+        
+Platform: UNKNOWN
+README.txt
+FixMendeley.egg-info/PKG-INFO
+FixMendeley.egg-info/SOURCES.txt
+FixMendeley.egg-info/dependency_links.txt
+FixMendeley.egg-info/top_level.txt
+fixmendeley/__init__.py
+fixmendeley/export-bib.py
+fixmendeley/fix-mendeley.py
+fixmendeley/mendeley_models.py
+fixmendeley/my_mendeley_models.pyfixmendeley
+__pycache__/*
+dist/*
