@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Fix entries via query from DBLP
+Fix Mendeley database entries via query from DBLP
 """
 
 import requests
@@ -27,7 +27,7 @@ def query_dblp(title):
     return list_hits[0]['info']
 
 
-def fix_via_dblp():
+def import_dblp():
     """
     Fix all main fields via query from dblp by title
     :rtype: object
