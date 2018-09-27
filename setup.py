@@ -1,5 +1,5 @@
 # coding=utf-8
-from distutils.core import setup
+from setuptools import setup
 
 import fixmendeley
 
@@ -13,4 +13,9 @@ setup(
     author=fixmendeley.__author__,
     author_email='jesusbriales@gmail.com',
     packages=['fixmendeley',],
+    entry_points={
+        'console_scripts': [
+            'fixmendeley = fixmendeley.main:main'
+        ],
+    },
 )
