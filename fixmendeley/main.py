@@ -28,7 +28,8 @@ def main():
     find_duplicates_and_fuse.parser.set_defaults(func=find_duplicates_and_fuse)
     find_duplicates_and_fuse.parser.add_argument('field')
     find_duplicates_and_fuse.parser.add_argument('value')
-    find_duplicates_and_fuse.parser.add_argument('--do_delete_remaining', action='store_true')
+    find_duplicates_and_fuse.parser.add_argument('--do-delete-remaining', '--delete-remaining',
+                                                 action='store_true')
 
     from fixmendeley.fix_venues import fix_venues
     fix_venues.parser = subparsers.add_parser(
@@ -41,6 +42,10 @@ def main():
         'import-dblp',
         description=import_dblp.__doc__)
     import_dblp.parser.set_defaults(func=import_dblp)
+    import_dblp.parser.add_argument('--do-force-all', '--force-all',
+                                    action='store_true')
+    import_dblp.parser.add_argument('--do-write-authors', '--write-authors',
+                                    action='store_true')
 
     from fixmendeley.test import test
     test.parser = subparsers.add_parser(
@@ -52,10 +57,12 @@ def main():
         parser.print_help()
         return True
 
-    # NOTE: Can this be simplified? Check doc
-    kwargs = dict(parser.parse_args(sys.argv[1:])._get_kwargs())
+    # Parse arguments
+    args = parser.parse_args()
+    kwargs = vars(args)
     func = kwargs.pop('func')
 
+    # Call function on user arguments
     successful = func(**kwargs)
     sys.exit(0 if successful else 1)
 

@@ -40,6 +40,7 @@ class Document(BaseModel):
 
 
 class Author(BaseModel):
+    contribution = CharField()
     documentid = ForeignKeyField(db_column='documentId', field='id', model=Document, backref='authors')
     firstnames = CharField(db_column='firstNames', null=True)
     lastname = CharField(db_column='lastName')
