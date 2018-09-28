@@ -38,6 +38,26 @@ def query_dblp(title):
         return resp_hits['hit']
 
 
+def choose_dblp_info(db_entry, hits):
+    if len(hits) == 1:
+        return hits[0]['info']
+    else:
+        # Is there an exact title match?
+        title = db_entry.title
+        remove_list = r':∗⋆.\- \n'
+        title_lowernospace = re.sub(r'[%s]' % remove_list, '', title.lower())
+
+        [hit['info']['title'] for hit in hits]
+        for hit in hits:
+            info_ = hit['info']
+            info_title = re.sub(r'[%s]' % remove_list, '', info_['title'].lower())
+            if info_title == title_lowernospace:
+                # "Exact" match
+                return info_
+
+        raise Exception("Choosing dblp, no exact match")
+
+
 def import_dblp(do_write_authors=False, do_force_all=False):
     """
     Fix all main fields of Mendeley database entries via query from dblp by title
@@ -66,42 +86,27 @@ def import_dblp(do_write_authors=False, do_force_all=False):
                     print(colored("WARNING: {title} not in DBLP".format(**db_entry.__data__), 'yellow'))
                     continue
 
-                def get_info(hits):
-                    if len(hits) == 1:
-                        return hits[0]['info']
-                    else:
-                        # Is there an exact title match?
-                        title_lowernospace = re.sub(r'[:∗⋆ ]', '', db_entry.title.lower())
+                # Pick one entry from found dblp hits
+                info = choose_dblp_info(db_entry, hits)
 
-                        for hit in hits:
-                            info_ = hit['info']
-                            info_title = re.sub(r'[:∗⋆.- ]', '', info_['title'].lower())
-                            if info_title == title_lowernospace:
-                                # "Exact" match
-                                return info_
-
-                        raise Exception("TODO: >1 hits, could not choose one")
-
-                info = get_info(hits)
+                # Get bibtex entry
+                bib_url = info['url'] + '.bib'
+                response = urllib.request.urlopen(bib_url)
+                bib_text = response.read().decode('utf-8')
+                # Parse bibtex
+                bib_db = bibtexparser.loads(bib_text)
+                bib_dict = bib_db.entries[0]
 
                 if info['type'] == 'Conference and Workshop Papers':
-                    # Get bibtex entry
-                    bib_url = info['url'] + '.bib'
-                    response = urllib.request.urlopen(bib_url)
-                    bib_text = response.read().decode('utf-8')
-                    # Parse bibtex
-                    bib_db = bibtexparser.loads(bib_text)
-                    print(bib_db.entries)
-                    bib_dict = bib_db.entries[0]
-
-                    # Populate inproceedings row fields
                     from .mendeley.documents import Inproceedings
                     doc = Inproceedings()
-                    doc.load_dblp_bib(bib_dict)
+                    doc.load_dblp(bib_dict, info)
                 elif info['type'] == 'Journal Articles':
                     from .mendeley.documents import Article
                     doc = Article()
-                    doc.load_dblp_info(info)
+                    doc.load_dblp(bib_dict, info)
+                elif info['type'] == 'Books and Theses':
+                    raise Exception('TODO: Implement Book type')
                 else:
                     raise Exception('TODO: Unknown type %s' % info['type'])
 
@@ -129,8 +134,6 @@ def import_dblp(do_write_authors=False, do_force_all=False):
                 print(colored("Saving %s" % entry_str, 'cyan'))
                 num_modified_rows = db_entry.save()
                 assert num_modified_rows > 0, colored("ERROR: No row was modified", 'red')
-
-
 
             except Exception as err:
                 import sys
