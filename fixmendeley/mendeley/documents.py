@@ -28,7 +28,7 @@ class Document:
 
         # Map equivalent dictionary keys to class attributes
         for key in vars(self).keys():
-            if not getattr(self, key):
+            if getattr(self, key) is None:
                 setattr(self, key, bib.get(key))
 
         self.year = int(info['year'])
